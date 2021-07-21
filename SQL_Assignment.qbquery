@@ -1,0 +1,66 @@
+/*3.1*/
+select alliance
+from (
+select alliance,count(*)
+from airlines
+group by alliance
+order by  alliance asc) as a
+limit 1;
+
+/*3.2*/
+select name
+from airlines
+where (planes < (select avg(planes) from airlines)) and (destinations > (select avg(destinations) from airlines)) ;
+
+/*3.3*/
+create table years
+(years_list year) ;
+insert into years
+values
+(1950),
+(1951),
+(1952),
+(1953),
+(1954),
+(1955),
+(1956),
+(1957),
+(1958),
+(1959);
+select * from years;
+
+/*3.4*/
+select established
+from airlines;
+
+/*3.5*/
+select *
+from years
+where years_list <> all(select established from airlines);
+
+/*4*/
+create table dates
+(
+old_name text,
+new_name text,
+change_date date 
+);
+
+delimiter #
+create trigger change_name before update on airlines
+for each row
+begin
+insert into dates values(old.name,new.name,current_date()) ;
+end#
+delimiter ;
+
+update airlines
+set name = 'Lufthansa Airways'
+where name = 'Lufthansa';
+
+select * from airlines ;
+
+select change_date 
+from dates
+where new_name = 'Lufthansa Airways';
+
